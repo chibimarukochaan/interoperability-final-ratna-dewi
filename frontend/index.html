@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Campus Event Registration Platform</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 0;
+      }
+
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-top: 30px;
+        margin-bottom: 5px;
+      }
+
+      h2 {
+        color: #2c3e50;
+        margin-left: 60px;
+      }
+
+      hr {
+        width: 60%;
+        margin: 20px auto 40px auto;
+        border: 1px solid #ddd;
+      }
+
+      #events {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+        padding: 20px 60px;
+      }
+
+      .event-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      form {
+        margin: 40px auto;
+        width: 60%;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      input,
+      select {
+        padding: 10px;
+        width: 100%;
+        margin-bottom: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Campus Event Registration Platform</h1>
+    <hr />
+
+    <h2>Daftar Event</h2>
+    <div id="events"></div>
+
+    <h2 style="margin-left: 60px">Form Pendaftaran Peserta</h2>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Nama Lengkap" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <select id="event_id" required></select>
+      <button type="submit">Daftar Sekarang</button>
+    </form>
+
+    <script>
+      const api = "http://127.0.0.1:8000";
+
+      async function loadEvents() {
+        const res = await fetch(`${api}/events`);
+        const data = await res.json();
+        const container = document.getElementById("events");
+        const select = document.getElementById("event_id");
+        container.innerHTML = "";
+        select.innerHTML = "";
+
+        data.forEach((event) => {
+          container.innerHTML += `
+            <div class="event-card">
+              <h3 style="color:#1a5276;">${event.title}</h3>
+              <p><b>Tanggal:</b> ${event.date}</p>
+              <p><b>Lokasi:</b> ${event.location}</p>
+              <p><b>Sisa Kuota:</b> ${event.remaining_quota}/${event.quota}</p>
+            </div>
+          `;
+          select.innerHTML += `<option value="${event.id}">${event.title}</option>`;
+        });
+      }
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const event_id = document.getElementById("event_id").value;
+
+          const res = await fetch(`${api}/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, event_id: parseInt(event_id) }),
+          });
+
+          if (res.ok) {
+            alert("Selamat pendaftaran anda berhasil!");
+            e.target.reset();
+            loadEvents();
+          } else {
+            const err = await res.json();
+            alert("Pendaftaran gagal. " + err.detail);
+          }
+        });
+
+      loadEvents();
+    </script>
+  </body>
+</html>

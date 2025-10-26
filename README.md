@@ -26,18 +26,21 @@ cd interoperability-final-ratna-dewi
    Jika database belum ada, jalankan:
 
 ```bash
+Copy code
 sqlite3 events.db < create_db.sql
 ```
 
 3. **Install Dependencies**
 
 ```bash
+Copy code
 pip install fastapi uvicorn sqlalchemy pydantic email-validator
 ```
 
 4. **Jalankan Backend**
 
 ```bash
+Copy code
 uvicorn main:app --reload
 Server berjalan di:
 http://127.0.0.1:8000
@@ -48,72 +51,75 @@ http://127.0.0.1:8000/docs
 
 5. **Jalankan Frontend**
    Buka file:
-```bash
+
 diff
+Copy code
 index.html
 langsung di browser.
-```
 
 **Deskripsi Endpoint API**
---
-**Events**
+Events
 
-```bash
 GET /events
 Mendapatkan daftar semua event & sisa kuota
 Response: 200 OK
-```
-```bash
+
 POST /events (Admin Only)
 Menambah event baru
 Header:
+
+```bash
 x-token: rahasia123
+```
 
 Body:
+
+```bash
+json
+Copy code
 {
   "title": "Judul Event",
   "date": "2025-12-01",
   "location": "Aula Kampus",
   "quota": 50
 }
-Response: 201 Created
 ```
+
+Response: 201 Created
 
 PUT /events/{event_id} (Admin Only)
-```bash
 Mengubah event berdasarkan ID
 Response: 200 OK
-```
 
 DELETE /events/{event_id} (Admin Only)
-```bash
 Menghapus event
 Response: 200 OK
-```
 
-**Participants**
+Participants
 
 POST /register
-```bash
 Mendaftarkan peserta ke event
 Body:
+
+```bash
+json
+Copy code
 {
   "name": "Nama Peserta",
   "email": "nama@peserta.com",
   "event_id": 1
 }
-Response: 201 Created
 ```
+
+Response: 201 Created
 
 GET /participants
-```bash
 Menampilkan semua peserta
 Response: 200 OK
-```
 
-**Authentication Admin Token**
---
-```bash
+Authentication Admin Token
 Endpoint CRUD Event dilindungi:
+
+```bash
 x-token: rahasia123
 ```
